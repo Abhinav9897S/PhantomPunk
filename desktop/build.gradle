@@ -1,5 +1,8 @@
 // Desktop module: LWJGL3 launcher. Run with ./gradlew desktop:run
-apply plugin: 'application'
+plugins {
+    id 'application'
+    id 'edu.sc.seis.launch4j' version '3.0.6'
+}
 
 application {
     mainClass = 'phantom.desktop.DesktopLauncher'
@@ -44,4 +47,35 @@ tasks.register('tour', JavaExec) {
     workingDir = rootProject.file('assets')
     args = ['--tour', project.findProperty('outDir') ?: layout.buildDirectory.dir('tour').get().asFile.path]
     if (System.getProperty('os.name').toLowerCase().contains('mac')) jvmArgs += ['-XstartOnFirstThread']
+}
+
+// Windows .exe launcher: ./gradlew desktop:createExe  (then see the windowsPackage task)
+launch4j {
+    mainClassName = application.mainClass.get()
+    outfile = 'PhantomDescent.exe'
+    productName = 'Phantom: The Umbral Descent'
+    headerType = 'gui'
+    bundledJrePath = 'jre'
+    jreMinVersion = '17'
+    jarTask = tasks.named('dist').get()
+    copyConfigurable = []   // everything is already inside the fat jar
+    classpath = []
+}
+
+// ./gradlew desktop:windowsPackage -PwindowsJre=/path/to/unzipped/windows-jre
+// -> build/windows/PhantomDescent.zip : PhantomDescent.exe + jre/ (no Java install needed on the target PC)
+tasks.register('windowsPackage', Zip) {
+    group = 'distribution'
+    description = 'Bundles the Windows exe with a Windows Java runtime into a ZIP.'
+    dependsOn 'createExe'
+    archiveFileName = 'PhantomDescent-Windows.zip'
+    destinationDirectory = rootProject.layout.buildDirectory.dir('windows')
+    into('PhantomDescent') {
+        from(layout.buildDirectory.file('launch4j/PhantomDescent.exe'))
+        from(rootProject.file('docs/PLAYERS_README.txt'))
+        into('jre') { from(project.findProperty('windowsJre') ?: 'missing-jre') }
+    }
+    doFirst {
+        if (!project.hasProperty('windowsJre')) throw new GradleException('Pass -PwindowsJre=<unzipped Windows JRE folder>')
+    }
 }
