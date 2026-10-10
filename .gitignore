@@ -1,0 +1,12 @@
+.gradle/
+build/
+bin/
+out/
+*.class
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.DS_Store
+assets/.phantom-cache/

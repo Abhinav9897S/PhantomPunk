@@ -1,0 +1,2 @@
+rootProject.name = 'PhantomDescent'
+include 'core', 'desktop'

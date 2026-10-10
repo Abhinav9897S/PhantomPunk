@@ -1,0 +1,31 @@
+// Core module: all game logic, rendering and art. Platform independent.
+dependencies {
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+    api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$controllersVersion"
+
+    testImplementation platform("org.junit:junit-bom:$junitVersion")
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+    // Tests read the real room files from the shared assets folder.
+    systemProperty 'phantom.assets', rootProject.file('assets').absolutePath
+    testLogging {
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat 'full'
+        showStandardStreams = false
+    }
+}
+
+// Developer tool: ./gradlew :core:artPreview -PoutDir=/some/folder  (writes PNG contact sheets of all procedural art)
+tasks.register('artPreview', JavaExec) {
+    group = 'tools'
+    description = 'Paints all procedural sprites headlessly and writes PNG previews.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'phantom.art.ArtPreview'
+    args = [project.findProperty('outDir') ?: layout.buildDirectory.dir('art-preview').get().asFile.path]
+    systemProperty 'java.awt.headless', 'true'
+}

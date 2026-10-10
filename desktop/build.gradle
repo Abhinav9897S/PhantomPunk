@@ -1,0 +1,36 @@
+// Desktop module: LWJGL3 launcher. Run with ./gradlew desktop:run
+apply plugin: 'application'
+
+application {
+    mainClass = 'phantom.desktop.DesktopLauncher'
+}
+
+// Assets are also on the classpath, so Eclipse launches work even if the working directory is wrong.
+sourceSets.main.resources.srcDirs += [rootProject.file('assets').path]
+
+dependencies {
+    implementation project(':core')
+    implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+    implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$controllersVersion"
+}
+
+run {
+    workingDir = rootProject.file('assets')
+    ignoreExitValue = true
+    if (System.getProperty('os.name').toLowerCase().contains('mac')) {
+        jvmArgs += ['-XstartOnFirstThread']
+    }
+}
+
+// ./gradlew desktop:dist -> runnable fat jar in desktop/build/libs
+tasks.register('dist', Jar) {
+    group = 'distribution'
+    archiveBaseName = 'PhantomDescent'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest { attributes 'Main-Class': application.mainClass.get() }
+    dependsOn configurations.runtimeClasspath
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}

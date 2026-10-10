@@ -1,0 +1,43 @@
+// Root build: shared settings for the core (game logic) and desktop (launcher) modules.
+allprojects {
+    apply plugin: 'eclipse'
+    version = '1.0.0'
+    ext {
+        appName = 'Phantom: The Umbral Descent'
+    }
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java-library'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = 17
+        options.compilerArgs += ['-Xlint:unchecked', '-Xlint:deprecation']
+    }
+
+    eclipse {
+        project.name = appName.replaceAll('[^A-Za-z]', '') + '-' + project.name
+    }
+}
+
+// ./gradlew sourceZip  ->  build/distributions/PhantomDescent-source.zip (sources + docs, no build output)
+tasks.register('sourceZip', Zip) {
+    group = 'distribution'
+    description = 'Packages the source code, assets and docs into a ZIP without build output.'
+    archiveFileName = 'PhantomDescent-source.zip'
+    destinationDirectory = layout.buildDirectory.dir('distributions')
+    from(rootDir) {
+        include 'build.gradle', 'settings.gradle', 'gradle.properties', 'gradlew', 'gradlew.bat', 'README.md', '.gitignore'
+        include 'gradle/**', 'docs/**', 'assets/**', 'core/src/**', 'core/build.gradle', 'desktop/src/**', 'desktop/build.gradle'
+        into 'PhantomDescent'
+    }
+}
