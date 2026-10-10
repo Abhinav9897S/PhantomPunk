@@ -78,6 +78,7 @@ public final class WorldRenderer implements Disposable {
         tiles.render(batch, world.getTileMap(), region, camX, camY, vw, vh, time);
         world.getEntities().render(ctx, alpha);
         drawParticles(world, false);
+        drawGroundMist(world, region, camX, camY);
         batch.end();
 
         lighting.renderLightMap(batch, camera, viewport, palette.ambientRef());
@@ -112,6 +113,24 @@ public final class WorldRenderer implements Disposable {
         }
         batch.setColor(Color.WHITE);
         batch.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+    }
+
+    /** Slow banks of fog drifting along the lower part of the view (thickest in the Umbral Heart). */
+    private void drawGroundMist(GameWorld world, Region region, float camX, float camY) {
+        Texture soft = art.texture("soft");
+        Color fog = art.getPalettes().get(region).fogRef();
+        float strength = region == Region.UMBRAL_HEART ? 0.22f : 0.09f;
+        float floor = Math.max(0f, camY - Constants.VIEW_HEIGHT / 2f);
+        for (int i = 0; i < 7; i++) {
+            float speed = 12f + i * 5f;
+            float span = Constants.VIEW_WIDTH + 600f;
+            float x = camX - span / 2f + ((i * 211f + time * speed) % span);
+            float y = floor + 10f + (i % 3) * 40f + (float) Math.sin(time * 0.4f + i) * 12f;
+            float w = 380f + (i % 4) * 90f;
+            batch.setColor(fog.r, fog.g, fog.b, strength * (0.6f + 0.4f * (float) Math.sin(time * 0.3f + i * 1.7f)));
+            batch.draw(soft, x - w / 2f, y - w * 0.18f, w, w * 0.36f);
+        }
+        batch.setColor(Color.WHITE);
     }
 
     private void drawParticles(GameWorld world, boolean additive) {

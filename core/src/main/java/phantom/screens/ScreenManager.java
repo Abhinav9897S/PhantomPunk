@@ -51,13 +51,15 @@ public final class ScreenManager {
     public void update(float dt) {
         BaseScreen top = stack.peek();
         if (top == null) return;
-        top.update(dt);
+        BaseScreen below = null;
         if (top.updatesBelow() && stack.size() > 1) {
             Iterator<BaseScreen> it = stack.iterator();
             it.next();
-            BaseScreen below = it.next();
-            if (below != top) below.update(dt);
+            below = it.next();
         }
+        top.update(dt);
+        // the top screen may have closed itself; only keep simulating what is still on the stack
+        if (below != null && stack.contains(below)) below.update(dt);
     }
 
     public void render(float alpha, float frameDelta) {

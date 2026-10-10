@@ -64,8 +64,29 @@ final class ScreenshotTour implements ApplicationListener {
             g.screens().push(new DialogueScreen(g, "Ossian the Lamplighter",
                     List.of("Another lantern, falling from Veyra... I had stopped counting."), List.of(), null));
         }, "14_dialogue"));
+        steps.add(new Step(20, g -> {
+            g.screens().pop();
+            room("r1_thorn", 52);
+            gameScreen.getWorld().getPlayer().getInventory().addShards(300);
+        }, null));
+        steps.add(new Step(150, g -> {
+            var shop = gameScreen.getWorld().getEntities().first(phantom.entities.props.Shopkeeper.class);
+            shop.interact(gameScreen.getWorld().getPlayer(), gameScreen.getWorld());
+        }, "15_shop"));
+        steps.add(new Step(30, g -> {
+            g.screens().pop();
+            var p = gameScreen.getWorld().getPlayer();
+            p.getHealth().update(100f);
+            for (int i = 0; i < 12 && !p.isDead(); i++) {
+                p.getHealth().update(10f);
+                p.takeDamage(new phantom.entities.DamageInfo(1, p.centerX() - 5, p.centerY(), phantom.entities.DamageKind.CONTACT),
+                        gameScreen.getWorld());
+            }
+        }, "16_death"));
+        steps.add(new Step(150, g -> { }, "17_respawn_at_bench"));
+        steps.add(new Step(30, g -> g.screens().push(new phantom.screens.SettingsScreen(g)), "18_settings"));
         steps.add(new Step(500, g -> g.screens().replaceAll(new EndingScreen(g, Ending.DAWN,
-                gameScreen.getWorld().getProgress(), 3)), "15_ending_dawn"));
+                gameScreen.getWorld().getProgress(), 3)), "19_ending_dawn"));
     }
 
     private static SaveData allAbilities() {
@@ -110,7 +131,9 @@ final class ScreenshotTour implements ApplicationListener {
         Step step = steps.get(index);
         if (frames == 0) step.action().accept(game);
         frames++;
-        if (gameScreen != null) gameScreen.getWorld().getPlayer().getHealth().makeInvincible(5f);
+        boolean dying = step.shot() != null && (step.shot().startsWith("16") || step.shot().startsWith("17"));
+        if (gameScreen != null && !dying) gameScreen.getWorld().getPlayer().getHealth().makeInvincible(5f);
+        if (frames % 120 == 0) Gdx.app.log("Tour", "fps " + Gdx.graphics.getFramesPerSecond());
         if (frames >= step.waitFrames()) {
             if (step.shot() != null) capture(step.shot());
             index++;

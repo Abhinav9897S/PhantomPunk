@@ -37,7 +37,7 @@ public final class MapRenderer {
         float ox = (Constants.UI_WIDTH - (maxX - minX) * scale) / 2f;
         float oy = 120 + (areaH - (maxY - minY) * scale) / 2f;
 
-        ui.rect(0, 0, Constants.UI_WIDTH, Constants.UI_HEIGHT, 0.01f, 0.01f, 0.02f, 0.88f * alpha);
+        ui.rect(0, 0, Constants.UI_WIDTH, Constants.UI_HEIGHT, 0.01f, 0.01f, 0.02f, 0.95f * alpha);
         ui.centered(ui.fonts().large(), "Map of the Descent", Constants.UI_WIDTH / 2f, Constants.UI_HEIGHT - 36, LABEL, alpha);
         ui.ornament(Constants.UI_WIDTH / 2f, Constants.UI_HEIGHT - 96, 380, alpha * 0.8f);
 

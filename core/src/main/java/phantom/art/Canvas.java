@@ -286,93 +286,30 @@ public final class Canvas {
         for (int i = 0; i < a.length; i++) a[i] *= factor;
     }
 
-    /** Box-filter downsample by an integer factor (premultiplied, so edges stay clean). */
-    public Canvas downsample(int factor) {
-        Canvas out = new Canvas(width / factor, height / factor, scale / factor);
-        float inv = 1f / (factor * factor);
-        for (int y = 0; y < out.height; y++) {
-            for (int x = 0; x < out.width; x++) {
-                float sr = 0;
-                float sg = 0;
-                float sb = 0;
-                float sa = 0;
-                for (int j = 0; j < factor; j++) {
-                    int row = (y * factor + j) * width;
-                    for (int k = 0; k < factor; k++) {
-                        int i = row + x * factor + k;
-                        sr += r[i] * a[i];
-                        sg += g[i] * a[i];
-                        sb += b[i] * a[i];
-                        sa += a[i];
-                    }
-                }
-                int o = y * out.width + x;
-                out.a[o] = sa * inv;
-                if (sa > 0) {
-                    out.r[o] = sr / sa;
-                    out.g[o] = sg / sa;
-                    out.b[o] = sb / sa;
-                }
-            }
-        }
-        return out;
+    // package-private access for CanvasOps (export and analysis helpers)
+    float[] red() { return r; }
+    float[] green() { return g; }
+    float[] blue() { return b; }
+    float[] alpha() { return a; }
+
+    static Canvas blank(int width, int height, float scale) {
+        return new Canvas(width, height, scale);
     }
 
-    /** White copy with the same alpha, used for hit flashes. */
-    public Canvas silhouette() {
-        Canvas out = new Canvas(width, height, scale);
-        Arrays.fill(out.r, 1f);
-        Arrays.fill(out.g, 1f);
-        Arrays.fill(out.b, 1f);
-        System.arraycopy(a, 0, out.a, 0, a.length);
-        return out;
-    }
-
-    /** Converts to a libGDX Pixmap (needs the native library, so only at runtime). */
-    public Pixmap toPixmap() {
-        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
-        pixmap.setBlending(Pixmap.Blending.None);
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                int i = y * width + x;
-                int rgba = ((int) (clamp01(r[i]) * 255) << 24) | ((int) (clamp01(g[i]) * 255) << 16)
-                        | ((int) (clamp01(b[i]) * 255) << 8) | (int) (clamp01(a[i]) * 255);
-                pixmap.drawPixel(x, y, rgba);
-            }
-        }
-        return pixmap;
-    }
-
-    /** Packed ARGB pixels (used by tests and the art preview tool; no GPU needed). */
-    public int[] toArgb() {
-        int[] out = new int[width * height];
-        for (int i = 0; i < out.length; i++) {
-            out[i] = ((int) (clamp01(a[i]) * 255) << 24) | ((int) (clamp01(r[i]) * 255) << 16)
-                    | ((int) (clamp01(g[i]) * 255) << 8) | (int) (clamp01(b[i]) * 255);
-        }
-        return out;
-    }
+    /** See {@link CanvasOps#downsample(Canvas, int)}. */
+    public Canvas downsample(int factor) { return CanvasOps.downsample(this, factor); }
+    /** See {@link CanvasOps#silhouette(Canvas)}. */
+    public Canvas silhouette() { return CanvasOps.silhouette(this); }
+    /** See {@link CanvasOps#toPixmap(Canvas)}. */
+    public Pixmap toPixmap() { return CanvasOps.toPixmap(this); }
+    /** See {@link CanvasOps#toArgb(Canvas)}. */
+    public int[] toArgb() { return CanvasOps.toArgb(this); }
+    public float alphaAt(int x, int y) { return a[y * width + x]; }
+    public float coverage() { return CanvasOps.coverage(this); }
+    public float maxAlpha() { return CanvasOps.maxAlpha(this); }
 
     private static float clamp01(float v) {
         return v < 0 ? 0 : (v > 1 ? 1 : v);
-    }
-
-    public float alphaAt(int x, int y) {
-        return a[y * width + x];
-    }
-
-    /** Fraction of pixels that are mostly opaque (used by tests). */
-    public float coverage() {
-        int count = 0;
-        for (float v : a) if (v > 0.5f) count++;
-        return count / (float) a.length;
-    }
-
-    /** Strongest alpha anywhere (used by tests for faint sprites such as rim strips). */
-    public float maxAlpha() {
-        float m = 0f;
-        for (float v : a) m = Math.max(m, v);
-        return m;
     }
 
     public int getPixelWidth() { return width; }
