@@ -24,6 +24,12 @@ public final class DesktopLauncher {
         config.useVsync(true);
         config.setForegroundFPS(60);
         config.setIdleFPS(30);
+        if (args.length >= 2 && args[0].equals("--tour")) {
+            // developer screenshot tour; uses a throwaway save folder so real saves are untouched
+            java.nio.file.Path temp = java.nio.file.Paths.get(System.getProperty("java.io.tmpdir"), "phantom-tour-save");
+            new Lwjgl3Application(new ScreenshotTour(new PhantomGame(temp), args[1]), config);
+            return;
+        }
         new Lwjgl3Application(new PhantomGame(SaveManager.defaultDirectory()), config);
     }
 }

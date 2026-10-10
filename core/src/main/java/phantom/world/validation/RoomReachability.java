@@ -66,24 +66,30 @@ public final class RoomReachability {
 
     private List<Integer> neighbours(int c, int r, int reach, int rise) {
         List<Integer> out = new ArrayList<>();
+        boolean standing = supported(c, r);
+        // a wall jump always pushes away from the wall, so from a pure cling you must leave it
+        int away = standing ? 0 : wallSide(c, r) * -1;
         for (int dc = -1; dc <= 1; dc += 2) {
+            if (away != 0 && dc != away) continue;
             int fell = fallFrom(c + dc, r);
             if (fell >= 0) out.add(fell);
         }
         for (int ty = Math.max(0, r - 12); ty <= Math.min(rows - 2, r + rise); ty++) {
             for (int tx = Math.max(0, c - reach); tx <= Math.min(cols - 1, c + reach); tx++) {
                 if (tx == c && ty == r) continue;
+                if (away != 0 && Integer.signum(tx - c) != away) continue;
                 if (!isNode(tx, ty)) continue;
                 if (jumpPossible(c, r, tx, ty, rise)) out.add(ty * cols + tx);
             }
         }
-        if (model.canWallClimb() && isWallNode(c, r)) {
-            for (int k = 1; k <= 2; k++) {
-                if (!bodyClear(c, r + k)) break;
-                if (isWallNode(c, r + k)) out.add((r + k) * cols + c);
-            }
-        }
         return out;
+    }
+
+    /** -1 if clinging to a wall on the left, +1 on the right, 0 if not next to a wall. */
+    private int wallSide(int c, int r) {
+        if (blocks(c - 1, r) && blocks(c - 1, r + 1)) return -1;
+        if (blocks(c + 1, r) && blocks(c + 1, r + 1)) return 1;
+        return 0;
     }
 
     private boolean jumpPossible(int c, int r, int tx, int ty, int rise) {

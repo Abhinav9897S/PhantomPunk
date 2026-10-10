@@ -63,8 +63,15 @@ public final class MapRenderer {
                 ui.rect(px - 4, py - 4, 8, 8, 1f, 0.95f, 0.8f, blink * alpha);
             }
         }
-        ui.centered(ui.fonts().small(), "Bench  ◆      Guardian  ■      You  ●      (Tab / M to close)",
-                Constants.UI_WIDTH / 2f, 60, LABEL, alpha * 0.8f);
+        float ly = 62;
+        float lx = Constants.UI_WIDTH / 2f - 300;
+        ui.diamond(lx, ly - 8, 10, alpha);
+        ui.text(ui.fonts().small(), "Bench", lx + 16, ly, LABEL, alpha * 0.8f);
+        ui.rect(lx + 120, ly - 13, 10, 10, 0.9f, 0.3f, 0.3f, alpha);
+        ui.text(ui.fonts().small(), "Guardian", lx + 138, ly, LABEL, alpha * 0.8f);
+        ui.rect(lx + 270, ly - 12, 8, 8, 1f, 0.95f, 0.8f, alpha);
+        ui.text(ui.fonts().small(), "You", lx + 286, ly, LABEL, alpha * 0.8f);
+        ui.text(ui.fonts().small(), "Tab / M: close", lx + 400, ly, LABEL, alpha * 0.6f);
     }
 
     private static Color tint(Region region) {

@@ -73,7 +73,7 @@ public final class TileRenderer {
                 if (map.areGatesClosed()) batch.draw(art.sheet(TilePainter.name(region, "gate")).frame(0), x, y, T, T);
                 break;
             case WATER:
-                drawLiquid(batch, map, c, r, x, y, time, 0.25f, 0.42f, 0.6f, 0.38f, 0.7f, 0.85f, 1f);
+                drawLiquid(batch, map, c, r, x, y, time, 0.1f, 0.2f, 0.32f, 0.5f, 0.45f, 0.7f, 0.9f);
                 break;
             case MIST:
                 drawLiquid(batch, map, c, r, x, y, time, 0.06f, 0.03f, 0.1f, 0.92f, 0.75f, 0.6f, 1f);

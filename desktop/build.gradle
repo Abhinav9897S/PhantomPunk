@@ -34,3 +34,14 @@ tasks.register('dist', Jar) {
     from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
     with jar
 }
+
+// Developer tool: ./gradlew desktop:tour -PoutDir=/some/folder  (screenshots of every region, a boss fight and the menus)
+tasks.register('tour', JavaExec) {
+    group = 'tools'
+    description = 'Runs the scripted screenshot tour.'
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = application.mainClass
+    workingDir = rootProject.file('assets')
+    args = ['--tour', project.findProperty('outDir') ?: layout.buildDirectory.dir('tour').get().asFile.path]
+    if (System.getProperty('os.name').toLowerCase().contains('mac')) jvmArgs += ['-XstartOnFirstThread']
+}
