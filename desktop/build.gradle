@@ -49,6 +49,19 @@ tasks.register('tour', JavaExec) {
     if (System.getProperty('os.name').toLowerCase().contains('mac')) jvmArgs += ['-XstartOnFirstThread']
 }
 
+// Same fat jar without the Linux/macOS/32-bit native libraries (smaller Windows download)
+tasks.register('distWindows', Jar) {
+    group = 'distribution'
+    archiveBaseName = 'PhantomDescent-windows'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest { attributes 'Main-Class': application.mainClass.get() }
+    dependsOn configurations.runtimeClasspath
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    exclude 'linux/**', 'macos/**', 'windows/x86/**', 'windows/arm64/**', '**/*.so', '**/*.dylib'
+    exclude 'gdx.dll', 'gdx-freetype.dll', 'jamepad.dll', 'META-INF/*.SF', 'META-INF/*.RSA', 'META-INF/*.DSA'
+}
+
 // Windows .exe launcher: ./gradlew desktop:createExe  (then see the windowsPackage task)
 launch4j {
     mainClassName = application.mainClass.get()
@@ -57,12 +70,15 @@ launch4j {
     headerType = 'gui'
     bundledJrePath = 'jre'
     jreMinVersion = '17'
-    jarTask = tasks.named('dist').get()
+    jarTask = tasks.named('distWindows').get()
     copyConfigurable = []   // everything is already inside the fat jar
     classpath = []
 }
 
-// ./gradlew desktop:windowsPackage -PwindowsJre=/path/to/unzipped/windows-jre
+// ./gradlew desktop:windowsPackage -PwindowsJre=/path/to/windows-jre
+// A small Windows runtime can be made from a Windows JDK's jmods (same Java version as your jlink):
+//   jlink --module-path <win-jdk>/jmods --add-modules java.base,java.management,jdk.unsupported
+//         --strip-debug --no-header-files --no-man-pages --compress=zip-0 --output windows-jre
 // -> build/windows/PhantomDescent.zip : PhantomDescent.exe + jre/ (no Java install needed on the target PC)
 tasks.register('windowsPackage', Zip) {
     group = 'distribution'
