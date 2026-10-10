@@ -72,7 +72,7 @@ public final class Player extends Character {
         motor.updateJump(this, input, world, dt);
         abilities.update(this, input, world, dt);
 
-        float gravity = abilities.controlsMovement() ? 0f : Constants.GRAVITY;
+        float gravity = abilities.suspendsGravity() ? 0f : Constants.GRAVITY;
         moveWithPhysics(world, dt, gravity, abilities.modifyMaxFall(Constants.MAX_FALL_SPEED), motor.isDroppingThrough());
         TileMap map = world.getTileMap();
         wallLeft = world.getCollision().isTouchingWall(this, map, Direction.LEFT);
@@ -255,7 +255,7 @@ public final class Player extends Character {
     public boolean isControlLocked() { return controlLock > 0; }
     public boolean isTouchingWall(Direction side) { return side == Direction.LEFT ? wallLeft : wallRight; }
     public boolean isClinging() { return abilities.has(AbilityType.WALL_CLING) && abilities.get(AbilityType.WALL_CLING, WallCling.class).isClinging(); }
-    public boolean isDashing() { return abilities.controlsMovement() && !isFocusing(); }
+    public boolean isDashing() { return abilities.suspendsGravity(); }
     public boolean isFocusing() { return abilities.get(AbilityType.FOCUS, Focus.class).getProgress() > 0; }
     public boolean canAttack() { return !dead && !resting && !abilities.controlsMovement(); }
     public boolean isDead() { return dead; }

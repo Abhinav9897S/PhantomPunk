@@ -62,6 +62,11 @@ public final class Dash implements Ability {
     }
 
     @Override
+    public boolean suspendsGravity() {
+        return activeTimer > 0;
+    }
+
+    @Override
     public void reset() {
         activeTimer = 0;
         cooldown = 0;

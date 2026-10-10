@@ -1,0 +1,23 @@
+{
+  "start": "r1_gate",
+  "rooms": [
+    "r1_gate",
+    "r1_hollow",
+    "r1_shaft",
+    "r1_shrine",
+    "r1_secret",
+    "r1_thorn",
+    "r1_boss",
+    "r2_steps",
+    "r2_aqueduct",
+    "r2_chapel",
+    "r2_secret",
+    "r2_gears",
+    "r2_boss",
+    "r3_verge",
+    "r3_spire",
+    "r3_secret",
+    "r3_lantern",
+    "r3_heart"
+  ]
+}

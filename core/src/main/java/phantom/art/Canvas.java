@@ -368,6 +368,13 @@ public final class Canvas {
         return count / (float) a.length;
     }
 
+    /** Strongest alpha anywhere (used by tests for faint sprites such as rim strips). */
+    public float maxAlpha() {
+        float m = 0f;
+        for (float v : a) m = Math.max(m, v);
+        return m;
+    }
+
     public int getPixelWidth() { return width; }
     public int getPixelHeight() { return height; }
     public float getScale() { return scale; }

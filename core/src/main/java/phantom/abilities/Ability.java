@@ -32,6 +32,11 @@ public interface Ability {
         return false;
     }
 
+    /** True while gravity should be switched off (only the dash; Focus keeps you grounded). */
+    default boolean suspendsGravity() {
+        return false;
+    }
+
     /** Lets an ability limit the fall speed (wall sliding). */
     default float modifyMaxFall(float normal) {
         return normal;

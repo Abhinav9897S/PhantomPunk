@@ -91,6 +91,13 @@ public final class AbilitySet implements Saveable {
         return false;
     }
 
+    public boolean suspendsGravity() {
+        for (Ability a : active()) {
+            if (a.suspendsGravity()) return true;
+        }
+        return false;
+    }
+
     public float modifyMaxFall(float normal) {
         float result = normal;
         for (Ability a : active()) result = Math.min(result, a.modifyMaxFall(normal));

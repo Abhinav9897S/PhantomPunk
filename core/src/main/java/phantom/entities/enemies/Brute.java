@@ -75,7 +75,7 @@ public final class Brute extends Enemy {
             world.getEvents().publish(new Events.Sfx(SoundId.BOSS_SLAM));
             setVelocityX(-getFacing().dx() * 120f);
             ai.change(EnemyState.STUNNED);
-        } else if (!world.getCollision().hasGroundAhead(this, world.getTileMap(), getFacing()) || ai.getTimeInState() > 1.6f) {
+        } else if (!world.getCollision().hasGroundAhead(this, world.getTileMap(), getFacing()) || ai.getTimeInState() > 2.4f) {
             ai.change(EnemyState.RECOVER);
         }
     }
