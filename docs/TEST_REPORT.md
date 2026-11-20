@@ -47,10 +47,6 @@ produces `build/distributions/PhantomDescent-source.zip` (269 files, no `build/`
 
 Run them with `./gradlew test` (about 10 seconds).
 
-Known flaky test (it predates Autoplay): `CombatTest.threeSlashesKillACrawlerAndPayOut` fails about
-one run in ten on its "shards dropped" check, because the world's random number generator is not
-seeded and the dropped shards sometimes land on the player and are collected before the check.
-
 ### Mapping to the required test list
 
 | Required | Covered by |

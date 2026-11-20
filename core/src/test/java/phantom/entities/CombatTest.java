@@ -65,22 +65,26 @@ class CombatTest {
     @Test
     void threeSlashesKillACrawlerAndPayOut() {
         Harness h = arena(TestWorlds.line("....P..c"));
+        // The world's random scatters the dropped shards; seed it so every run plays out the same.
+        h.world.getRandom().setSeed(1L);
         Player p = h.world.getPlayer();
         Crawler crawler = h.world.getEntities().first(Crawler.class);
         h.tick(1);
         crawler = h.world.getEntities().first(Crawler.class);
         p.getHealth().makeInvincible(100f);
+        int cooldownTicks = Math.round((Constants.ATTACK_COOLDOWN + 0.02f) / Constants.STEP);
         for (int i = 0; i < 12 && crawler.isAlive(); i++) {
             p.setFacing(crawler.centerX() > p.centerX() ? phantom.util.Direction.RIGHT : phantom.util.Direction.LEFT);
             h.input.press(GameAction.ATTACK);
             h.tick(1);
             h.input.release(GameAction.ATTACK);
-            h.seconds(Constants.ATTACK_COOLDOWN + 0.02f);
-            p.teleport(crawler.centerX() - 50f, p.getY());
+            // Wait out the cooldown, but stop at the killing blow: shards older than 0.3 s that
+            // touch the player are collected, so waiting longer could empty the floor before the check.
+            for (int t = 0; t < cooldownTicks && crawler.isAlive(); t++) h.tick(1);
+            if (crawler.isAlive()) p.teleport(crawler.centerX() - 50f, p.getY());
         }
         assertFalse(crawler.isAlive(), "crawler died");
         assertEquals(3 * Constants.SOUL_PER_HIT, p.getSoul().getAmount(), "light gained per hit");
-        h.seconds(0.1f);
         assertFalse(h.world.getEntities().getAll(ShardPickup.class).isEmpty(), "shards dropped");
         assertEquals(1, h.world.getProgress().getEnemiesKilled());
     }
