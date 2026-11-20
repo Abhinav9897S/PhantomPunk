@@ -1,19 +1,25 @@
 # Builds the Windows download (PhantomDescent.exe + a bundled Java runtime, no Java install needed).
 #
 # * Every push: the ZIP is attached to the workflow run (Actions tab > run > Artifacts).
-# * Pushing a tag that starts with "v" (for example v1.0.1) also publishes it on the
-#   Releases page, so anyone can download it without a GitHub account:
-#       git tag v1.0.1 && git push origin v1.0.1
+# * Publishing a release whose tag starts with "v" (Releases > Draft a new release on GitHub),
+#   or pushing such a tag (git tag v1.0.1 && git push origin v1.0.1), puts the ZIP on the
+#   Releases page, so anyone can download it without a GitHub account.
 name: Windows download
 
 on:
   push:
     branches: ['**']
     tags: ['v*']
+  release:
+    types: [published]
   workflow_dispatch:
 
 permissions:
   contents: write   # needed to create the release and upload the ZIP to it
+
+# A release made on the website can fire both "release" and the tag "push": run them one at a time.
+concurrency:
+  group: windows-${{ github.ref }}
 
 jobs:
   windows:

@@ -71,7 +71,10 @@ The ZIP is built by GitHub Actions on a Windows machine (`.github/workflows/wind
 
 * **Every push** builds it and attaches it to the run: *Actions* tab > *Windows download* > a run >
   *Artifacts* > `PhantomDescent-Windows` (you must be signed in to GitHub).
-* **Pushing a version tag** also publishes it on the Releases page, where anyone can download it:
+* **Publishing a release** puts it on the Releases page, where anyone can download it. On GitHub:
+  *Releases* > *Draft a new release* > *Choose a tag*, type a new tag such as `v1.0.1` > set
+  *Target* to the branch to release > *Publish release*. About two minutes later the workflow
+  attaches `PhantomDescent-Windows.zip` to the release. Pushing a tag does the same:
 
   ```bash
   git tag v1.0.1
