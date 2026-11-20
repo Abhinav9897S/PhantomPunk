@@ -52,7 +52,7 @@ jobs:
           Get-Item build\windows\PhantomDescent-Windows.zip | Format-List Name, Length
 
       # Uploads the unzipped folder, so the artifact download is a single ZIP (not a ZIP inside a ZIP).
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: PhantomDescent-Windows
           path: build/windows/unzipped/
@@ -70,3 +70,8 @@ jobs:
             gh release create "$TAG" build/windows/PhantomDescent-Windows.zip --repo "$GITHUB_REPOSITORY" \
               --title "Phantom: The Umbral Descent $TAG" --notes-file .github/release-notes.md
           fi
+
+      # Lets setup-java save the Gradle cache (a running daemon keeps its lock files busy).
+      - name: Stop Gradle
+        if: always()
+        run: .\gradlew.bat --stop
