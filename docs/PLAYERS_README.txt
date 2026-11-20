@@ -7,6 +7,8 @@ HOW TO PLAY
      Java is included in the "jre" folder - nothing else to install.
   3. If Windows shows "Windows protected your PC", click "More info" then "Run anyway"
      (the game is not code-signed).
+  4. Choose New Game to play, or Autoplay to watch an AI play the whole game to the
+     ending (F changes its speed, Esc stops it). Autoplay never touches your save.
 
 CONTROLS
   Move .............. A / D  or  arrow keys

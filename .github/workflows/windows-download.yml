@@ -1,0 +1,72 @@
+# Builds the Windows download (PhantomDescent.exe + a bundled Java runtime, no Java install needed).
+#
+# * Every push: the ZIP is attached to the workflow run (Actions tab > run > Artifacts).
+# * Pushing a tag that starts with "v" (for example v1.0.1) also publishes it on the
+#   Releases page, so anyone can download it without a GitHub account:
+#       git tag v1.0.1 && git push origin v1.0.1
+name: Windows download
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed to create the release and upload the ZIP to it
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Run the tests
+        run: .\gradlew.bat test --console=plain
+
+      # Only the three JDK modules the game uses (checked with jdeps), so the download stays small.
+      - name: Make a small Java runtime for Windows
+        run: >
+          jlink --module-path "$env:JAVA_HOME\jmods"
+          --add-modules java.base,java.management,jdk.unsupported
+          --strip-debug --no-header-files --no-man-pages
+          --output "$env:RUNNER_TEMP\windows-jre"
+
+      - name: Build PhantomDescent-Windows.zip
+        run: .\gradlew.bat desktop:windowsPackage "-PwindowsJre=$env:RUNNER_TEMP\windows-jre" --console=plain
+
+      - name: Check the package
+        run: |
+          Expand-Archive build\windows\PhantomDescent-Windows.zip -DestinationPath build\windows\unzipped
+          $dir = "build\windows\unzipped\PhantomDescent"
+          foreach ($f in 'PhantomDescent.exe', 'PLAYERS_README.txt', 'jre\bin\javaw.exe') {
+            if (-not (Test-Path "$dir\$f")) { throw "missing $f in the ZIP" }
+          }
+          & "$dir\jre\bin\java.exe" --list-modules
+          Get-Item build\windows\PhantomDescent-Windows.zip | Format-List Name, Length
+
+      # Uploads the unzipped folder, so the artifact download is a single ZIP (not a ZIP inside a ZIP).
+      - uses: actions/upload-artifact@v5
+        with:
+          name: PhantomDescent-Windows
+          path: build/windows/unzipped/
+
+      - name: Publish the release (tags starting with v only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release upload "$TAG" build/windows/PhantomDescent-Windows.zip --clobber --repo "$GITHUB_REPOSITORY"
+          else
+            gh release create "$TAG" build/windows/PhantomDescent-Windows.zip --repo "$GITHUB_REPOSITORY" \
+              --title "Phantom: The Umbral Descent $TAG" --notes-file .github/release-notes.md
+          fi

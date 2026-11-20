@@ -58,7 +58,29 @@ starts a fresh game and never touches your own save.
 **Saving.** JSON save in `~/.phantom-descent/`. Missing, corrupted or incompatible saves never
 crash the game: you get a message and a fresh start, and the bad file is kept as `save.json.bad`.
 
-## Requirements
+## Download and play on Windows (no Java needed)
+
+1. Download **[PhantomDescent-Windows.zip](https://github.com/Abhinav9897S/PhantomPunk/releases/latest/download/PhantomDescent-Windows.zip)**
+   (or open the [Releases page](https://github.com/Abhinav9897S/PhantomPunk/releases) and pick it under *Assets*).
+2. Unzip it, open the `PhantomDescent` folder and double-click **PhantomDescent.exe**. Java is
+   bundled in the `jre` folder.
+3. If Windows shows "Windows protected your PC", click *More info* then *Run anyway* (the game is
+   not code-signed).
+
+The ZIP is built by GitHub Actions on a Windows machine (`.github/workflows/windows-download.yml`):
+
+* **Every push** builds it and attaches it to the run: *Actions* tab > *Windows download* > a run >
+  *Artifacts* > `PhantomDescent-Windows` (you must be signed in to GitHub).
+* **Pushing a version tag** also publishes it on the Releases page, where anyone can download it:
+
+  ```bash
+  git tag v1.0.1
+  git push origin v1.0.1
+  ```
+
+To build the same ZIP yourself, see the `windowsPackage` task in `desktop/build.gradle`.
+
+## Requirements (to build from source)
 
 * **JDK 17 or newer** (tested with OpenJDK 21). Nothing else: the Gradle wrapper downloads
   Gradle and libGDX on first build (internet needed once).
