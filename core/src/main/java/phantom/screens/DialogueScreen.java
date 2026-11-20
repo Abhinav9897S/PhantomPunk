@@ -2,6 +2,7 @@ package phantom.screens;
 
 import java.util.List;
 import java.util.function.IntConsumer;
+import java.util.function.ToIntFunction;
 
 import phantom.PhantomGame;
 import phantom.audio.SoundId;
@@ -26,6 +27,9 @@ public final class DialogueScreen extends BaseScreen {
     private float chars;
     private int selected;
     private float time;
+    /** Autoplay: picks the answer and turns the pages by itself, at a readable pace. */
+    private ToIntFunction<List<String>> autoChooser;
+    private float autoTimer;
 
     public DialogueScreen(PhantomGame game, String speaker, List<String> lines, List<String> choices, IntConsumer onChoice) {
         super(game);
@@ -35,6 +39,12 @@ public final class DialogueScreen extends BaseScreen {
         this.onChoice = onChoice;
     }
 
+    /** Lets the autoplay AI read this conversation: lines advance by themselves and {@code chooser} picks the answer. */
+    public DialogueScreen autoAnswer(ToIntFunction<List<String>> chooser) {
+        this.autoChooser = chooser;
+        return this;
+    }
+
     @Override
     public void update(float dt) {
         time += dt;
@@ -42,6 +52,7 @@ public final class DialogueScreen extends BaseScreen {
         String current = lines.get(line);
         chars += CHARS_PER_SECOND * dt;
         boolean last = line == lines.size() - 1;
+        if (autoChooser != null && autoStep(dt, current, last)) return;
         boolean choosing = last && !choices.isEmpty() && chars >= current.length();
         if (choosing) {
             if (in.isJustPressed(GameAction.DOWN)) { selected = (selected + 1) % choices.size(); game.audio().play(SoundId.UI_MOVE); }
@@ -57,11 +68,46 @@ public final class DialogueScreen extends BaseScreen {
         } else if (!last) {
             line++;
             chars = 0;
+            autoTimer = 0;
             game.audio().play(SoundId.UI_MOVE);
         } else {
             game.audio().play(SoundId.UI_SELECT);
             close(choices.isEmpty() ? -1 : selected);
         }
+    }
+
+    /** One tick of hands-free reading. Returns true if the dialogue closed. */
+    private boolean autoStep(float dt, String current, boolean last) {
+        if (chars < current.length()) return false;
+        autoTimer += dt;
+        if (last && !choices.isEmpty()) {
+            int want = Math.max(0, Math.min(choices.size() - 1, autoChooser.applyAsInt(choices)));
+            if (selected != want) {
+                if (autoTimer > 0.4f) {
+                    selected = (selected + 1) % choices.size();
+                    autoTimer = 0;
+                    game.audio().play(SoundId.UI_MOVE);
+                }
+                return false;
+            }
+            if (autoTimer > 1.1f) {
+                game.audio().play(SoundId.UI_SELECT);
+                close(selected);
+                return true;
+            }
+            return false;
+        }
+        float readTime = Math.min(2.8f, 0.8f + current.length() * 0.028f);
+        if (autoTimer < readTime) return false;
+        autoTimer = 0;
+        if (!last) {
+            line++;
+            chars = 0;
+            game.audio().play(SoundId.UI_MOVE);
+            return false;
+        }
+        close(choices.isEmpty() ? -1 : selected);
+        return true;
     }
 
     private boolean advancePressed(InputSource in) {

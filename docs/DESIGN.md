@@ -116,11 +116,44 @@ Benches save and set the respawn point. On death the player's shards stay with a
 last safe ground position (the death spot itself may be inside spikes), and the player wakes at the
 last bench. Spikes and mist send the player back to the last safe ground with one mask of damage.
 
+### 13. Autoplay: an AI that only presses buttons
+The *Autoplay* menu option hands the controller to `autoplay.AutoPilot`. It never moves Phantom
+directly: each tick it fills the same `InputSource` a keyboard would (a `ScriptedInput`), so every
+jump, hit, death and respawn follows the normal rules. *Why:* it doubles as the strongest possible
+test of the game - `AutoplayPlaythroughTest` plays the whole game headlessly in about 1-2 seconds.
+
+* **Prediction in a sandbox.** `Sandbox` is a second `WorldContext`: an empty copy of the room
+  holding a "ghost" `Player`. `Player.copyMotionStateFrom` clones position, velocity, ground
+  contact and every jump, dash and cling timer, so running the unchanged player code in the sandbox
+  says exactly where an input sequence will land. This is dependency inversion paying off.
+* **Navigation.** `RoomNav` turns a room into segments (runs of floor). Edges between segments are
+  found by trying `Maneuver`s in the sandbox - walk off, running jump, Wisp Leap, dash, drop through
+  a ledge, Moss Grip zig-zag climb - and are only kept if they still land when started a few pixels
+  off. Dijkstra over these edges gives a route; the `Navigator` walks to each take-off point,
+  re-checks the manoeuvre from Phantom's exact state (and against predicted enemies, re-aiming the
+  landing if a sentinel stands on it), then performs it. Any surprise (knockback, a wall that just
+  broke) simply triggers a replan. The graph of a new room is built while the screen is black
+  during the door transition.
+* **What to do.** `Quest` reads the room files and makes a depth-first tour of the room tree that
+  visits dead-end branches (shrines, secret rooms) before the branch with the next guardian. When a
+  goal is unreachable and the room has a cracked wall, the pilot breaks it open.
+* **Fighting.** `Dangers` forecasts boss charges and leaps (with shockwaves), eruptions,
+  projectiles, diving moths, charging brutes and falling rocks for the next ~0.7 s. `Fighter`
+  plays a dozen short candidate moves (stand, walk, retreat, jump, double jump, dash, focus) on
+  the ghost and keeps the one that avoids every predicted hit while staying in striking range;
+  slashes, up-slashes and Light Bolts are thrown whenever the real target is in reach. The same
+  rollout planner steers back to safe ground after a mid-air hit. No boss has hand-written tactics.
+* **Integration.** `GameScreen.autoplay(game)` starts a fresh, never-saved game; dialogues read
+  themselves (`DialogueScreen.autoAnswer`) and the pilot picks the hidden ending or the best
+  affordable upgrade; F changes `PhantomGame`'s simulation speed.
+
 ## Performance notes
 * One simulation tick costs about 0.02 ms (measured in `PerformanceSmokeTest`), so logic is
   far below the 16.7 ms budget.
 * Projectiles and particles are pooled (`ObjectPool<T>`); per-tick loops avoid allocation
   (the unlocked-ability list is cached, the lighting system stores lights in a float array).
 * Tile drawing is culled to the camera view; the light map renders at half resolution.
+* Autoplay thinking costs well under a millisecond on most ticks; outside door transitions the
+  worst tick measured over whole runs was about 10 ms.
 * All textures, the atlas, frame buffers, fonts, sounds and the batch are disposed in their
   owners' `dispose()` methods.

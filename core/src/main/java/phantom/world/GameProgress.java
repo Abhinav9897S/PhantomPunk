@@ -40,6 +40,7 @@ public final class GameProgress implements Saveable {
 
     public boolean isWallBroken(String id) { return brokenWalls.contains(id); }
     public void markWallBroken(String id) { brokenWalls.add(id); }
+    public int getBrokenWallsCount() { return brokenWalls.size(); }
 
     /** Records a visit and returns true if the room was new. */
     public boolean discover(String roomId) { return discoveredRooms.add(roomId); }

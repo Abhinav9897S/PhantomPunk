@@ -96,6 +96,9 @@ public final class FallingRock extends Prop {
 
     public boolean isFalling() { return phase == Phase.FALLING; }
 
+    /** Seconds until a shaking rock lets go, or -1 if it is not shaking. */
+    public float getTimeUntilFall() { return phase == Phase.SHAKING ? Math.max(0f, 0.45f - timer) : -1f; }
+
     @Override
     public void render(RenderContext ctx, float alpha) {
         if (phase == Phase.BROKEN) return;

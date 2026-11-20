@@ -22,7 +22,7 @@ public final class PauseScreen extends BaseScreen {
         menu.add(new MenuButton("Resume", () -> game.screens().pop()))
             .add(new MenuButton("Map", () -> game.screens().push(new MapScreen(game, gameScreen))))
             .add(new MenuButton("Settings", () -> game.screens().push(new SettingsScreen(game))))
-            .add(new MenuButton("Save & Quit to Title", gameScreen::saveAndQuit));
+            .add(new MenuButton(gameScreen.isAutoplay() ? "Stop Autoplay" : "Save & Quit to Title", gameScreen::saveAndQuit));
     }
 
     @Override

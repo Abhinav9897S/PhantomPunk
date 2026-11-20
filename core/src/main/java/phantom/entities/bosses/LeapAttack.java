@@ -82,4 +82,11 @@ public final class LeapAttack implements BossAttack {
     public boolean isTelegraphing() {
         return !airborne;
     }
+
+    /** Seconds until take-off (0 once airborne). */
+    public float getWindupLeft() { return airborne ? 0f : Math.max(0f, WINDUP - time); }
+
+    public float getJumpVelocity() { return jumpVelocity; }
+    public boolean isAirborne() { return airborne && !landed; }
+    public boolean hasShockwaves() { return shockwaves; }
 }

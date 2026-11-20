@@ -51,6 +51,7 @@ public final class TitleScreen extends BaseScreen {
         boolean worldOk = game.worldData() != null;
         menu.add(new MenuButton(() -> "Continue", this::continueGame, () -> worldOk && game.saves().hasSave(), null))
             .add(new MenuButton(() -> "New Game", this::newGame, () -> worldOk, null))
+            .add(new MenuButton(() -> "Autoplay", this::autoplay, () -> worldOk, null))
             .add(new MenuButton("Settings", () -> game.screens().push(new SettingsScreen(game))))
             .add(new MenuButton("Credits", () -> game.screens().push(new CreditsScreen(game))))
             .add(new MenuButton("Exit", () -> Gdx.app.exit()));
@@ -76,6 +77,11 @@ public final class TitleScreen extends BaseScreen {
                 List.of("Yes, descend anew", "No"), choice -> {
                     if (choice == 0) startFresh();
                 }));
+    }
+
+    /** Watch the whole game being played by the autoplay AI. Your own save is never touched. */
+    private void autoplay() {
+        game.screens().replaceAll(GameScreen.autoplay(game));
     }
 
     private void startFresh() {

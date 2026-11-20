@@ -193,12 +193,36 @@ public final class Player extends Character {
         attack.cancel();
     }
 
+    /**
+     * Turns this player into a movement clone of {@code src}: position, velocity, facing, ground contact,
+     * abilities and every jump/dash/cling timer. Health is left alone. The autoplay AI simulates such a
+     * clone ("ghost") a few seconds ahead to predict exactly where an input sequence will take Phantom.
+     */
+    public void copyMotionStateFrom(Player src) {
+        teleport(src.getX(), src.getY());
+        setVelocity(src.getVelocityX(), src.getVelocityY());
+        setFacing(src.getFacing());
+        getContacts().copyFrom(src.getContacts());
+        abilities.copyStateFrom(src.abilities);
+        motor.copyFrom(src.motor);
+        attack.copyFrom(src.attack);
+        controlLock = src.controlLock;
+        wallLeft = src.wallLeft;
+        wallRight = src.wallRight;
+        resting = src.resting;
+        dead = false;
+        safeX = src.safeX;
+        safeY = src.safeY;
+        safeTimer = src.safeTimer;
+    }
+
     /** Called after a room transition. */
     public void enterAt(float x, float y) {
         teleport(x, y);
         safeX = x;
         safeY = y;
         safeTimer = 0;
+        controlLock = 0;
         motor.reset();
         attack.cancel();
         abilities.resetAll();

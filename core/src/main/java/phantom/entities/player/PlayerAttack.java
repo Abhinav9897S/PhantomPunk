@@ -84,6 +84,16 @@ public final class PlayerAttack {
         }
     }
 
+    void copyFrom(PlayerAttack o) {
+        swing = o.swing;
+        cooldown = o.cooldown;
+        active = 0;
+        visual = o.visual;
+    }
+
+    /** True if a new swing could start now. */
+    public boolean isReady() { return cooldown <= 0 && active <= 0; }
+
     void cancel() {
         active = 0;
         visual = 0;

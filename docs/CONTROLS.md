@@ -29,6 +29,19 @@
 | Adjust a setting | A / D or Left / Right |
 | Back | Esc or Backspace |
 
+## Autoplay
+
+Pick **Autoplay** on the title screen to watch the AI play a fresh game to the end (your save is
+not touched). While it plays:
+
+| Action | Keys |
+| --- | --- |
+| Change speed (x1, x2, x4) | F |
+| Pause, or stop Autoplay from the pause menu | Esc or P |
+| Open the map | Tab or M |
+
+Dialogues turn their own pages at reading pace; Enter still skips ahead.
+
 ## Gamepad (standard SDL mapping, via gdx-controllers)
 
 | Action | Button |

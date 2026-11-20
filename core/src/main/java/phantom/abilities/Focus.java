@@ -59,6 +59,11 @@ public final class Focus implements Ability {
         channel = 0;
     }
 
+    @Override
+    public void copyStateFrom(Ability other) {
+        channel = ((Focus) other).channel;
+    }
+
     /** 0..1 progress of the current channel, for the renderer. */
     public float getProgress() {
         return Math.min(1f, channel / Constants.FOCUS_TIME);

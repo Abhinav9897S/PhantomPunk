@@ -59,4 +59,12 @@ public final class ChargeAttack implements BossAttack {
     public boolean isTelegraphing() {
         return time < telegraph;
     }
+
+    /** Seconds until the charge starts (0 once running). */
+    public float getWindupLeft() { return Math.max(0f, telegraph - time); }
+
+    public float getSpeed() { return speed; }
+
+    /** -1 or +1: the direction locked in when the attack began. */
+    public float getDirection() { return dir; }
 }

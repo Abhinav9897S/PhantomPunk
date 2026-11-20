@@ -22,6 +22,14 @@ public final class CollisionResult {
     void setHitLeft() { hitLeft = true; }
     void setHitRight() { hitRight = true; }
 
+    /** Copies the flags of another result (used when cloning an entity for movement prediction). */
+    public void copyFrom(CollisionResult other) {
+        onGround = other.onGround;
+        hitCeiling = other.hitCeiling;
+        hitLeft = other.hitLeft;
+        hitRight = other.hitRight;
+    }
+
     public boolean isOnGround() { return onGround; }
     public boolean isHitCeiling() { return hitCeiling; }
     public boolean isHitLeft() { return hitLeft; }

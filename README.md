@@ -45,6 +45,16 @@ map with additive glows, light shafts, drifting ground mist, spores, embers, ash
 water ripples, a smooth look-ahead camera, a vignette, a serif title screen with an animated
 background, and synthesised sound effects and ambient drones.
 
+**Autoplay.** Choose *Autoplay* on the title screen to watch the whole game played from the
+Fallen Gate to the ending by an AI. It plays with the same buttons you do: it plans routes through
+each room by test-running jumps on an invisible copy of Phantom with the real physics, fights
+enemies and all three guardians, rests at benches, talks to the NPCs, shops, breaks the cracked
+walls, collects all three Ember Relics and chooses the hidden ending (a run takes about six
+minutes). Press **F** to cycle the speed (x1, x2, x4) and **Esc** to pause or stop. Autoplay
+starts a fresh game and never touches your own save.
+
+![Autoplay fighting the Hollow Heart](docs/screenshots/20_autoplay.jpg)
+
 **Saving.** JSON save in `~/.phantom-descent/`. Missing, corrupted or incompatible saves never
 crash the game: you get a message and a fresh start, and the bad file is kept as `save.json.bad`.
 
@@ -58,7 +68,7 @@ crash the game: you get a message and a fresh start, and the bad file is kept as
 
 ```bash
 ./gradlew desktop:run          # Windows: gradlew.bat desktop:run
-./gradlew test                 # run the JUnit suite (72 tests)
+./gradlew test                 # run the JUnit suite (81 tests)
 ./gradlew build                # compile everything and run the tests
 ./gradlew desktop:dist         # runnable fat jar in desktop/build/libs/
 ./gradlew sourceZip            # source + docs ZIP in build/distributions/
@@ -92,6 +102,7 @@ If anything goes wrong, see [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md).
 | Drop through a ledge | S + Jump |
 | Map | Tab or M |
 | Pause | Esc or P |
+| Autoplay speed (while watching Autoplay) | F |
 
 Gamepads work too. See [docs/CONTROLS.md](docs/CONTROLS.md).
 
@@ -106,6 +117,8 @@ PhantomPunk/
 │   ├── abilities/              Ability (interface) + Dash, WallCling, DoubleJump, LightBolt, Focus
 │   ├── ai/                     StateMachine<E>, EnemyState, EnemyBehaviour, Behaviours
 │   ├── art/                    Canvas rasteriser, painters, SpriteFactory, ParallaxBackground
+│   ├── autoplay/               AutoPilot (the Autoplay AI): Quest, RoomNav, Navigator, Maneuver,
+│   │                           Fighter, Dangers, Sandbox
 │   ├── audio/                  SoundSynth (PCM synthesis), AudioManager
 │   ├── components/             HealthComponent, Inventory, AbilitySet, Animator, Hitbox, SoulMeter
 │   ├── entities/               GameObject > Entity > Character, Projectile, Shade, interfaces

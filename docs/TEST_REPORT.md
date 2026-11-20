@@ -21,7 +21,7 @@ and no Gradle deprecation warnings**. `./gradlew eclipse` generates valid Eclips
 (core, desktop, and the `assets` folder linked onto the desktop classpath). `./gradlew sourceZip`
 produces `build/distributions/PhantomDescent-source.zip` (269 files, no `build/` folders, no `.class` files).
 
-## 2. Automated tests (JUnit 5): 74 tests, 0 failures, 0 skipped
+## 2. Automated tests (JUnit 5): 81 tests, 0 failures, 0 skipped
 
 | Test class | Tests | What it proves |
 | --- | --- | --- |
@@ -42,8 +42,14 @@ produces `build/distributions/PhantomDescent-source.zip` (269 files, no `build/`
 | `audio.SoundSynthTest` | 3 | Every sound effect is audible and in range; WAV header is correct; ambient loops have no click at the seam |
 | `events.EventBusTest` | 2 | Queued delivery per event type; listeners may unsubscribe and publish while dispatching |
 | `util.ObjectPoolTest` | 2 | Pool reuses instances; particle bursts recycle through the pool |
+| `autoplay.AutoPilotTest` | 4 | The sandbox ghost predicts the three ability gates exactly (dash gap, Moss Grip shaft, Wisp Leap ledge); the route planner finds no way through a gate without its ability and a way with it; the tour visits shrines and secret rooms before each guardian; the pilot picks the hidden ending and only affordable upgrades |
+| `autoplay.AutoplayPlaythroughTest` | 3 | **The Autoplay AI finishes the whole game** from a new game, with button presses only, on three random seeds: all three guardians beaten, all three Ember Relics, the hidden ending chosen |
 
-Run them with `./gradlew test` (about 4 seconds).
+Run them with `./gradlew test` (about 10 seconds).
+
+Known flaky test (it predates Autoplay): `CombatTest.threeSlashesKillACrawlerAndPayOut` fails about
+one run in ten on its "shards dropped" check, because the world's random number generator is not
+seeded and the dropped shards sometimes land on the player and are collected before the check.
 
 ### Mapping to the required test list
 
@@ -57,7 +63,7 @@ Run them with `./gradlew test` (about 4 seconds).
 | save/load round trip | `SaveSystemTest.roundTripKeepsEveryPieceOfProgress` |
 | corrupted-save recovery | `SaveSystemTest` (corrupted, wrong types, versions, partial) |
 | level validation | `LevelValidationTest`, `RoomLoaderTest` |
-| headless simulation | `HeadlessSimulationTest` |
+| headless simulation | `HeadlessSimulationTest`, `AutoplayPlaythroughTest` |
 
 ## 3. Level validation
 
@@ -109,6 +115,20 @@ A display *was* available through Xvfb with a software OpenGL renderer.
 
 Regenerate them with `xvfb-run ./gradlew desktop:tour -PoutDir=<folder>` (or just
 `./gradlew desktop:tour` on a desktop).
+
+### Autoplay
+
+* **Real game, virtual display.** The desktop jar was started under Xvfb (OpenJDK 21.0.13), the
+  *Autoplay* entry of the title menu was pressed and the speed set to x4. The AI played every
+  room of all three regions in order and reached the ending screen after 112 seconds of real
+  time (35 to 48 FPS with software rendering). The ending screen read *Dawn over Veyra*,
+  "Time 0:05:27 - Deaths 0 - Foes vanquished 30 - Ember Relics 3 / 3", "Hidden ending discovered".
+  The run was repeated after the final code changes (finished in 104 s at x4, and in 219 s at x2).
+
+  ![Autoplay jump-slashing the Hollow Heart](screenshots/20_autoplay.jpg)
+* **Many seeds, headless.** The same playthrough as `AutoplayPlaythroughTest` was run on 30 more
+  random seeds (100 to 129): **30 of 30 reached the hidden ending**, with 1 death in total, in 5 to
+  6.6 minutes of game time each.
 
 ## 6. Performance
 

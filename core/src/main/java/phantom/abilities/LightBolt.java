@@ -41,4 +41,9 @@ public final class LightBolt implements Ability {
         world.shake(0.15f);
         world.getEvents().publish(new Events.Sfx(SoundId.BOLT));
     }
+
+    @Override
+    public void copyStateFrom(Ability other) {
+        cooldown = ((LightBolt) other).cooldown;
+    }
 }

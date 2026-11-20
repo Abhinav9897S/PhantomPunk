@@ -48,6 +48,11 @@ public final class DoubleJump implements Ability {
         available = true;
     }
 
+    @Override
+    public void copyStateFrom(Ability other) {
+        available = ((DoubleJump) other).available;
+    }
+
     public boolean isAvailable() {
         return available;
     }

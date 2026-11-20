@@ -108,6 +108,16 @@ public final class AbilitySet implements Saveable {
         for (Ability a : abilities.values()) a.reset();
     }
 
+    /** Makes this set an exact copy of another one: unlocked abilities and their timers (movement prediction). */
+    public void copyStateFrom(AbilitySet other) {
+        unlocked.clear();
+        unlocked.putAll(other.unlocked);
+        for (Map.Entry<AbilityType, Ability> e : abilities.entrySet()) {
+            e.getValue().copyStateFrom(other.abilities.get(e.getKey()));
+        }
+        rebuildCache();
+    }
+
     /** Unlocked abilities in declaration (priority) order. */
     public List<Ability> active() {
         return java.util.Collections.unmodifiableList(activeCache);

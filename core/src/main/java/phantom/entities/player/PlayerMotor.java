@@ -77,6 +77,13 @@ final class PlayerMotor {
         return dropTimer > 0;
     }
 
+    void copyFrom(PlayerMotor o) {
+        coyoteTimer = o.coyoteTimer;
+        bufferTimer = o.bufferTimer;
+        dropTimer = o.dropTimer;
+        rising = o.rising;
+    }
+
     void reset() {
         coyoteTimer = 0;
         bufferTimer = 0;

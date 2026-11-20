@@ -46,6 +46,8 @@ public final class PhantomGame extends ApplicationAdapter {
     private WorldData worldData;
     private String worldError;
     private float accumulator;
+    /** Simulation steps per real-time step (autoplay fast-forward); 1 = normal speed. */
+    private int simulationSpeed = 1;
 
     public PhantomGame(Path saveDirectory) {
         this.saveDirectory = saveDirectory;
@@ -83,7 +85,7 @@ public final class PhantomGame extends ApplicationAdapter {
     @Override
     public void render() {
         float frame = Math.min(Gdx.graphics.getDeltaTime(), Constants.MAX_FRAME_TIME);
-        accumulator += frame;
+        accumulator += frame * simulationSpeed;
         while (accumulator >= Constants.STEP) {
             input.poll();
             screens.update(Constants.STEP);
@@ -145,5 +147,7 @@ public final class PhantomGame extends ApplicationAdapter {
     public UiKit ui() { return ui; }
     public FitViewport uiViewport() { return uiViewport; }
     public WorldData worldData() { return worldData; }
+    public int simulationSpeed() { return simulationSpeed; }
+    public void setSimulationSpeed(int speed) { simulationSpeed = Math.max(1, speed); }
     public String worldError() { return worldError; }
 }

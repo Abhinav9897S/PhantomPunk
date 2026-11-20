@@ -156,6 +156,9 @@ public abstract class Boss extends Enemy {
         return ai.is(EnemyState.STUNNED) || (current != null && current.isTelegraphing());
     }
 
+    /** The attack in progress, or null between attacks (read-only view for the autoplay AI). */
+    public BossAttack getCurrentAttack() { return ai.is(EnemyState.ATTACK) ? current : null; }
+
     public void setFade(float value) { fade = GameMath.clamp(value, 0f, 1f); }
     public float getFade() { return fade; }
     public boolean isAwake() { return awake; }

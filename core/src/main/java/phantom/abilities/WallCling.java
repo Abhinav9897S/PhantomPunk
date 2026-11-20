@@ -72,6 +72,13 @@ public final class WallCling implements Ability {
         clinging = false;
     }
 
+    @Override
+    public void copyStateFrom(Ability other) {
+        WallCling o = (WallCling) other;
+        clinging = o.clinging;
+        wall = o.wall;
+    }
+
     public boolean isClinging() {
         return clinging;
     }

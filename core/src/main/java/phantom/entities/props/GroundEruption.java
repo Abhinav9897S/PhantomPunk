@@ -59,6 +59,12 @@ public final class GroundEruption extends Prop {
         if (time > telegraph + ACTIVE + RETRACT) remove();
     }
 
+    /** Seconds until the pillar bursts out (0 while it is out). */
+    public float getTimeUntilActive() { return Math.max(0f, telegraph - time); }
+
+    /** Seconds until the pillar stops hurting. */
+    public float getTimeUntilHarmless() { return Math.max(0f, telegraph + ACTIVE - time); }
+
     private static Color colorFor(Region region) {
         switch (region) {
             case WHISPERING_ROOTS: return ROOTS;

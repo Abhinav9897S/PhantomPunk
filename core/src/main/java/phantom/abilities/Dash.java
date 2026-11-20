@@ -73,6 +73,15 @@ public final class Dash implements Ability {
         airDashReady = true;
     }
 
+    @Override
+    public void copyStateFrom(Ability other) {
+        Dash o = (Dash) other;
+        activeTimer = o.activeTimer;
+        cooldown = o.cooldown;
+        airDashReady = o.airDashReady;
+        direction = o.direction;
+    }
+
     public boolean isDashing() {
         return activeTimer > 0;
     }

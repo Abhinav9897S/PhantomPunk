@@ -44,4 +44,7 @@ public interface Ability {
 
     /** Clears transient state, e.g. after a room change. */
     default void reset() { }
+
+    /** Copies transient state from another ability of the same type (used for movement prediction). */
+    default void copyStateFrom(Ability other) { }
 }
