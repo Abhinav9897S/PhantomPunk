@@ -1,4 +1,5 @@
-# Builds the Windows download (PhantomDescent.exe + a bundled Java runtime, no Java install needed).
+# Builds the Windows download (PhantomDescent.exe + a bundled Java runtime, no Java install needed)
+# and the cross-platform PhantomDescent.jar (macOS / Linux / Windows with Java 17+).
 #
 # * Every push: the ZIP is attached to the workflow run (Actions tab > run > Artifacts).
 # * Publishing a release whose tag starts with "v" (Releases > Draft a new release on GitHub),
@@ -57,6 +58,18 @@ jobs:
           & "$dir\jre\bin\java.exe" --list-modules
           Get-Item build\windows\PhantomDescent-Windows.zip | Format-List Name, Length
 
+      - name: Build the cross-platform jar (any OS with Java 17+)
+        run: .\gradlew.bat desktop:dist --console=plain
+
+      # Everything that goes on the Releases page: both downloads plus the project report and viva guide.
+      - name: Collect the release files
+        shell: bash
+        run: |
+          mkdir -p build/release
+          cp desktop/build/libs/PhantomDescent-[0-9]*.jar build/release/PhantomDescent.jar
+          cp build/windows/PhantomDescent-Windows.zip docs/report/*.pdf build/release/
+          ls -l build/release
+
       # Uploads the unzipped folder, so the artifact download is a single ZIP (not a ZIP inside a ZIP).
       - uses: actions/upload-artifact@v6
         with:
@@ -70,10 +83,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: |
+          files=(build/release/*)
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
-            gh release upload "$TAG" build/windows/PhantomDescent-Windows.zip --clobber --repo "$GITHUB_REPOSITORY"
+            gh release upload "$TAG" "${files[@]}" --clobber --repo "$GITHUB_REPOSITORY"
           else
-            gh release create "$TAG" build/windows/PhantomDescent-Windows.zip --repo "$GITHUB_REPOSITORY" \
+            gh release create "$TAG" "${files[@]}" --repo "$GITHUB_REPOSITORY" \
               --title "Phantom: The Umbral Descent $TAG" --notes-file .github/release-notes.md
           fi
 

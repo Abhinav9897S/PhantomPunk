@@ -1,7 +1,7 @@
 // Root build: shared settings for the core (game logic) and desktop (launcher) modules.
 allprojects {
     apply plugin: 'eclipse'
-    version = '1.0.0'
+    version = '1.1.0'
     ext {
         appName = 'Phantom: The Umbral Descent'
     }

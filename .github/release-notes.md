@@ -10,5 +10,16 @@
 Choose **New Game** to play, or **Autoplay** on the title screen to watch an AI play the whole game
 to the ending (press **F** to change its speed, **Esc** to stop). Autoplay never touches your save.
 
+## Play on macOS or Linux (or Windows with Java)
+
+Install Java 17 or newer, download **PhantomDescent.jar** below and run `java -jar PhantomDescent.jar`
+(or double-click it if your system opens jar files with Java).
+
+## Project documents
+
+**Phantom_OOP_Project_Report.pdf** is the project report (the OOP concepts used in the game, with code
+and screenshots) and **Phantom_Viva_Guide.pdf** has the division of work and viva questions. The team
+and who built what are also shown on the game's *Credits* screen.
+
 Controls: A / D move, Space jump, J strike, W interact, hold F to heal, K dash, L Light Bolt,
 Tab map, Esc pause. Saves are kept in `C:\Users\<you>\.phantom-descent\`.

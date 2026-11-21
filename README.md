@@ -81,7 +81,28 @@ The ZIP is built by GitHub Actions on a Windows machine (`.github/workflows/wind
   git push origin v1.0.1
   ```
 
+**macOS, Linux (or Windows with Java):** install Java 17+, download
+**[PhantomDescent.jar](https://github.com/Abhinav9897S/PhantomPunk/releases/latest/download/PhantomDescent.jar)**
+and run `java -jar PhantomDescent.jar`. The same release also has the project report and viva guide PDFs.
+
 To build the same ZIP yourself, see the `windowsPackage` task in `desktop/build.gradle`.
+
+## Team
+
+An object-oriented programming project submitted to Dr. Gargi Singh. The same division of work is shown
+on the game's *Credits* screen.
+
+| Student | Module | Main work |
+| --- | --- | --- |
+| Abhinav Singh (2501200022) | Core engine, player and movement | Game loop and class hierarchy, player, abilities, input, collision, camera, rendering, sound; Autoplay jump prediction and routes |
+| Aryaman Gora (2501200024) | Enemies, bosses and combat | Enemy AI state machines, the three bosses and their attacks, combat, particles, lighting, procedural art; Autoplay combat planner |
+| Aarav Singh (2501200016) | World, saving, screens and UI | Rooms, level loader and validator, saving, events, story and endings, menus, HUD, NPCs and the shop; Autoplay quest planner and menu mode |
+
+All three shared the game design, playtesting and the project report:
+[project report](docs/report/Phantom_OOP_Project_Report.pdf) and
+[viva guide](docs/report/Phantom_Viva_Guide.pdf) (PDF).
+
+![Credits screen](docs/screenshots/21_credits.jpg)
 
 ## Requirements (to build from source)
 
@@ -176,6 +197,7 @@ PhantomPunk/
 * [docs/TROUBLESHOOTING.md](docs/TROUBLESHOOTING.md): Eclipse and Gradle problems
 * [docs/TEST_REPORT.md](docs/TEST_REPORT.md): what was tested and the actual results
 * [docs/PLAN.md](docs/PLAN.md): milestones and world layout
+* [docs/report/](docs/report/): project report and viva guide (PDF)
 * [assets/README.md](assets/README.md): how the procedural art works and how to replace it
 
 ## Developer tools
